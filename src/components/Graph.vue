@@ -33,8 +33,8 @@ export default {
     },
     watch:{
         graph(){
-            if (this.graph.length >10)
-                this.graph.unshift()
+            if (this.graph.length >19)
+                this.graph.shift()
         }
     }
 }
