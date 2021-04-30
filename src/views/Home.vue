@@ -94,8 +94,6 @@ export default {
         this.selectedItem = null
         this.graphClose()
       }
-      if (this.page!==1 && (this.page-1) * this.currenciesOnPage +1 > this.filteredCurrencies.length)
-       this.page--
       localStorage.setItem('currencies-list', JSON.stringify(this.currencies))
     },
     selectItem(item){
@@ -126,6 +124,10 @@ export default {
     },
     filter(){
       this.page = 1
+    },
+    paginatedCurrencies(){
+      if (this.paginatedCurrencies.length === 0 && this.page != 1)
+        this.page--
     }
   },
   components: {
