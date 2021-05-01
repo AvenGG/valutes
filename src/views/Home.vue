@@ -37,6 +37,7 @@
 <script>
 import CurrenciesScreen from "@/components/CurrenciesScreen"
 import Graph from "@/components/Graph"
+import {loadCurrencies} from "@/api"
 export default {
   name: 'Home',
   data(){
@@ -55,25 +56,24 @@ export default {
   created(){
     let currencies = localStorage.getItem('currencies-list')
 
-    if (currencies){
+    if (currencies)
       this.currencies = JSON.parse(currencies)
-      this.currencies.forEach(c => setInterval(async ()=>{this.addFetch(c)},5000))
-    }
+    setInterval(this.updateCurrencies,5000)
+
   },
   methods:{
-    addFetch(newTicker){
-      
-       fetch(`https://min-api.cryptocompare.com/data/price?fsym=${newTicker.code}&tsyms=USD&api_key=4104769462fe146c52a8d6d1b4bb86966d73b85a8da6ba7790ce38f29f6da2e0`)
-          .then((responce)=>{
-              return responce.json()
-          })
-          .then((data) =>{
-            console.log(data)
-            this.currencies.find(c=> c.code ===  newTicker.code).rate = data.USD
-            if(this.selectedItem?.code === newTicker.code)
+    async updateCurrencies(){
+      const data = await loadCurrencies(this.currencies.map(c=>c.code))
+      if(!data) return
+      console.log(data)
+      this.currencies.forEach(c=>{
+        const rate = data[c.code.toUpperCase()]?.USD
+        if(rate){
+          c.rate = rate
+          if(this.selectedItem?.code === c.code)
               this.graph.push(data.USD)
-          })
-      
+        }
+      })
     },
     add(){
       let t = this.ticker.trim()
@@ -86,7 +86,6 @@ export default {
       }
       this.currencies.push(newTicker)
       localStorage.setItem('currencies-list', JSON.stringify(this.currencies))
-      setInterval(async ()=>{this.addFetch(newTicker)},5000)
     },
     deleteTicker(ticker, isEqual){
       this.currencies = this.currencies.filter(currency => currency.code != ticker)
@@ -125,8 +124,8 @@ export default {
     filter(){
       this.page = 1
     },
-    paginatedCurrencies(){
-      if (this.paginatedCurrencies.length === 0 && this.page != 1)
+    paginatedCurrencies(value){
+      if (value.length === 0 && this.page != 1)
         this.page--
     }
   },
