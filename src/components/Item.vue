@@ -1,6 +1,6 @@
 <template>
     <div class="item-container" :class="{selected}" >
-        <h2 class="code"> {{ currency.code }} - USD</h2>
+        <h3 class="code"> {{ currency.code }} - USD</h3>
         <p class="name"> {{ currency.name }} </p>
         <p class="rate"> {{ currency.rate }} </p>
         <button @click.stop="$emit('delete-ticker', currency.code)" class="delete__button"> Удалить </button>
