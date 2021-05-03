@@ -41,6 +41,7 @@
       v-if="graphIsOpen"
       @graph-close="graphClose"
       :graph="graph"
+      :name ="this.selectedItem.code"
     />
   </div>
 </template>
