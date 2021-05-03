@@ -1,6 +1,10 @@
 <template>
-    <div class="graph">
+<div class="graph-container">
+    <div class="elements">
+        {{name}} - USD
         <button @click="$emit('graph-close')" class="graph__close">&times;</button>
+    </div>
+    <div class="graph" ref="graph">
         <div class="graph__column"
             v-for="(g,i) in normalizedGraph"
             :key="i"
@@ -8,6 +12,7 @@
         >
         </div>
     </div>
+</div>
 </template>
 
 <script>
@@ -16,12 +21,28 @@
 export default {
     data(){
         return {
-
+            graphElementsQuantity: 5
         }
+    },
+    mounted(){
+        this.setGraphElementsQuantity()
+        window.addEventListener('resize', this.setGraphElementsQuantity)
+    },
+    beforeDestroy(){
+        window.removeEventListener('resize', this.setGraphElementsQuantity)
+
     },
     props: {
         graph:{
             type: Array
+        },
+        name:{
+            type: String
+        }
+    },
+    methods:{
+        setGraphElementsQuantity(){
+            this.graphElementsQuantity =  this.$refs.graph.clientWidth / 11
         }
     },
     computed:{
@@ -33,7 +54,11 @@ export default {
     },
     watch:{
         graph(){
-            if (this.graph.length >19)
+            while (this.graph.length > this.graphElementsQuantity)
+                this.graph.shift()
+        },
+        graphElementsQuantity(){
+            while (this.graph.length > this.graphElementsQuantity)
                 this.graph.shift()
         }
     }
@@ -41,30 +66,38 @@ export default {
 </script>
 
 <style scoped>
+    .graph-container{
+        width:100%;
+        height: 300px;
+        border: 1px solid #222;
+    }
     .graph{
-        max-width:800px;
-        width:80%;
-        height: 400px;
+        height: 90%;
         display: flex;
         flex-direction: row;
-        border: 1px solid #222;
         align-items: flex-end;
-        position: relative;
+    }
+    
+    .elements{
+        height: 10%;
+        display: flex;
+        justify-content: space-between;
     }
     .graph__column{
-        width: 5%;
+        width: 10px;
         height: 90%;
-        margin: 0 1px;
+        margin: 0 1px 0 0;
         background-color: blueviolet;
 
     }
     .graph__close{
-        position: absolute;
-        right: 10px;
-        top:10px;
         width: 25px;
         height: 25px;
         outline:none;
-        border-radius: 50%;
+        font-size: 20px;
+        border: 1px solid black;
+        border-right: transparent;
+        border-top: transparent;
+        background-color: rgb(255, 255, 255);
     }
 </style>
