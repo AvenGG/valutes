@@ -1,48 +1,50 @@
 <template>
   <div class="home">
-    <div class="ticker-form">
-      <input  type="text" class="ticker-form__input" placeholder="Например BTC"
-        @keydown.enter="add" v-model="ticker"
-      >
-      <button @click="add" class="ticker-form__button">Добавить</button>
-
-      <div class="autocomplette">
-        <button class="autocomplette-button"
-          v-for="suggestion of autocompleteSuggestions"
-          :key="suggestion"
-          @click="addSuggestion(suggestion)"
+    <div class="page">
+      <div class="ticker-form">
+        <input  type="text" class="ticker-form__input" placeholder="Например BTC"
+          @keydown.enter="add" v-model="ticker"
         >
-          {{suggestion}}
-        </button>
-      </div>
-    </div>    
-      <div class="navigation pages margin-top__10">
-        <button class="page__button"
-          :disabled="page === 1"
-          @click="page--"
-        >Назад</button>
+        <button @click="add" class="ticker-form__button">Добавить</button>
 
-        Страница {{page}} из {{pages}}
-        <button class="page__button"
-         :disabled="page >= pages"
-          @click="page++"
-        >Вперёд</button>
-      </div>
-      Фильтр: <input type="text" class="filter-input" placeholder="Введите название"
-        v-model="filter"
-      >
-    <CurrenciesScreen class="margin-top__10"
-      :messageIfEmpty="{true: 'Добавьте валюту!', false: 'Нет подходящих валют!'}[filter==='']"
-      :currencies="paginatedCurrencies"
-      @delete-ticker="deleteTicker"
-      @select-item="selectItem"
-    />
-    <Graph class="margin-5"
-      v-if="graphIsOpen"
-      @graph-close="graphClose"
-      :graph="graph"
-      :name ="this.selectedItem.code"
-    />
+        <div class="autocomplette">
+          <button class="autocomplette-button"
+            v-for="suggestion of autocompleteSuggestions"
+            :key="suggestion"
+            @click="addSuggestion(suggestion)"
+          >
+            {{suggestion}}
+          </button>
+        </div>
+      </div>    
+        <div class="navigation pages margin-top__10">
+          <button class="page__button"
+            :disabled="page === 1"
+            @click="page--"
+          >Назад</button>
+
+          Страница {{page}} из {{pages}}
+          <button class="page__button"
+           :disabled="page >= pages"
+            @click="page++"
+          >Вперёд</button>
+        </div>
+        Фильтр: <input type="text" class="filter-input" placeholder="Введите название"
+          v-model="filter"
+        >
+      <CurrenciesScreen class="margin-top__10"
+        :messageIfEmpty="{true: 'Добавьте валюту!', false: 'Нет подходящих валют!'}[filter==='']"
+        :currencies="paginatedCurrencies"
+        @delete-ticker="deleteTicker"
+        @select-item="selectItem"
+      />
+      <Graph class="margin-5"
+        v-if="graphIsOpen"
+        @graph-close="graphClose"
+        :graph="graph"
+        :name ="this.selectedItem.code"
+      />
+    </div>
   </div>
 </template>
 
@@ -60,7 +62,7 @@ export default {
       selectedItem: null,
       graphIsOpen:false,
       page: 1,
-      currenciesOnPage: 4,
+      currenciesOnPage: 6,
       filter: '',
       validCoins: {}
     }
@@ -76,14 +78,7 @@ export default {
   },
   methods:{
     async getValidCoins(){
-      const coinList = await getCoinList()
-      for (let coin of Object.keys(coinList)){
-        this.validCoins[coin.toUpperCase()] = {
-          name: coinList[coin]['FullName'].split('(')[0],
-          code: coin
-        }
-      }
-      console.log(this.validCoins)
+      this.validCoins = await getCoinList()
     },
     async updateCurrencies(){
       const data = await loadCurrencies(this.currencies.map(c=>c.code))
@@ -181,7 +176,12 @@ export default {
     padding:0;
   }
   .home{
-    margin: 15px;
+    margin-top: 15px;
+  }
+  .page{
+    width:60%;
+    min-width:600px;
+    margin: 0 auto;
   }
   .ticker-form{
     margin-bottom: 20px;
@@ -194,8 +194,13 @@ export default {
   .ticker-form__button{
     width: 80px;
     height: 30px;
-    border-radius: 100px;
-    outline:none;
+    box-shadow: 0px 0px 2px 1px rgb(117, 117, 117);
+    border:none;
+    color: rgb(0, 0, 0);
+    background-color: rgb(240, 240, 240);
+  }
+  .ticker-form__button:hover{
+    background-color: rgb(111, 255, 118);
   }
   .navigation{
   }
