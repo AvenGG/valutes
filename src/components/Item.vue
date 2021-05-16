@@ -27,19 +27,37 @@
     margin:0;
 }
     .item-container{
-        border: 2px solid rgb(131, 131, 131);
-        width: 150px;
-        height: 120px;
+        border: none;
+        box-shadow: 1px 1px 5px 1px rgb(68, 68, 68);
+        width: 170px;
+        height: 130px;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
         margin: 10px;
         border-radius: 5px;
-        cursor:pointer
+        cursor:pointer;
+        transition: ease-in-out 0.04s;
+    }
+    .item-container:hover{
+        background-color: rgb(255, 217, 0);
+        transition: ease-in-out 0.2s;
     }
     .selected{
-        border:2px solid rebeccapurple;
+        box-shadow: 1px 1px 5px 1px rebeccapurple;
+    }
+    .delete__button{
+    background-color: white;
+    border: 1px solid rgb(19, 19, 19);
+    border-radius: 2px;
+    color: rgb(19, 19, 19);
+    font-size: 14px;
+    }
+    .delete__button:hover{
+        background-color: rgb(56, 56, 56);
+        color: white;
+        transition: ease-in-out 0.2s;
     }
     .code{
 
