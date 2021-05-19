@@ -20,7 +20,7 @@
                                 </select>
                     </div>
                     <div>Сумма: <input v-model.number="amountToDeposit" class="valute-input"></div>
-                        <button @click="deposit" class="operation__button">Пополнить</button>
+                    <button @click="deposit" class="operation__button">Пополнить</button>
                 </div>      
                 <div class="operation__container">
                     <div class="operation__label">Вывод средств</div>
@@ -31,7 +31,12 @@
                                 </select>
                     </div>
                     <div>Сумма: <input v-model.number="amountToWithdraw" class="valute-input"></div>
-                        <button @click="withdraw" class="operation__button">Вывести</button>
+                    <button @click="withdraw" class="operation__button">Вывести</button>
+
+                    <div class="error-message"
+                            v-show="errors.withdraw">
+                            Недостаточно средств!
+                    </div>
                 </div>      
                 <div class="create operation__container">
                     <div class="operation__label">Добавить валюту</div>
@@ -51,11 +56,14 @@
                             </button>
                         </div>
                         <button @click="create" class="operation__button">Добавить</button>
-
-                    
+                        <div class="error-message"
+                            v-show="errors.create">
+                            Валюта не поддерживается!
+                        </div>
                 </div>
 
                 <div class="exchange operation__container">
+                    <div class="operation__label">Обменять валюту</div>
                     <div class="give">
                         <div>Отдаёте</div>
                         <select v-model="valuteToGive">
@@ -85,6 +93,10 @@
                     </div>
                     <button @click="exchange" class="operation__button">Обменять</button>
                     <button @click="getRate" class="operation__button">Обновить курс</button>
+                    <div class="error-message"
+                            v-show="errors.exchange">
+                            Недостаточно средств для обмена!
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,7 +110,9 @@ export default {
     data(){
         return{
             wallet:{USD: 0.0, BTC: 0.0},
-
+            rate: 0,
+            validCoins:{},
+            user:'',
             valuteToDeposit:'USD',
             amountToDeposit: 0,
             valuteToWithdraw:'USD',
@@ -108,9 +122,13 @@ export default {
             valuteToGive:'USD',
             amountToGive: 0,
             valuteToReceive:'BTC',
-            rate: 0,
-            validCoins:{},
-            user:''
+            
+            errors:{
+                deposit: false,
+                withdraw: false,
+                create: false,
+                exchange: false
+            }
         }
     },
     created(){
@@ -159,15 +177,23 @@ export default {
                 if((this.wallet[this.valuteToWithdraw] - this.amountToWithdraw).toFixedNumber(8) >=0){
                     this.wallet[this.valuteToWithdraw] = (this.wallet[this.valuteToWithdraw] - this.amountToWithdraw).toFixedNumber(8)
                     this.synchronize()
+                    this.errors.withdraw = false
+                }else {
+                    this.errors.withdraw = true
                 }
             }
         },
         create(){
             let c = this.coinToCreate.trim().toUpperCase()
             this.coinToCreate = ""
-            if(!c || !(c in this.validCoins) ) return;
+            if(!c || !(c in this.validCoins) ) {
+                this.errors.create = true
+                return
+                };
             this.$set(this.wallet,c, 0.0)
             this.synchronize()
+            this.errors.create = false
+
         },
         async exchange(){
             if(typeof this.amountToGive ==='number'){
@@ -175,8 +201,11 @@ export default {
                 if((this.wallet[this.valuteToGive] - this.amountToGive).toFixedNumber(8) >=0){
                     this.wallet[this.valuteToGive] = (this.wallet[this.valuteToGive] - this.amountToGive).toFixedNumber(8)
                     this.wallet[this.valuteToReceive] = (this.wallet[this.valuteToReceive] + this.rate *this.amountToGive).toFixedNumber(8)
+                    this.synchronize()
+                    this.errors.exchange = false
+                }else{
+                    this.errors.exchange = true
                 }
-                this.synchronize()
             }
         },
         addSuggestion(s){
@@ -268,11 +297,18 @@ export default {
     background-color: rgb(240, 240, 240);
   }
   .operation__button:hover{
-      background-color: rgb(111, 255, 118);
+    background-color: rgb(111, 255, 118);
   }
   .operation__label{
-      font-weight: bold;
-      color: rgb(37, 37, 37);
+    font-weight: bold;
+    color: rgb(37, 37, 37);
+  }
+
+  .error-message{
+    color: red;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
   }
 </style>
 
