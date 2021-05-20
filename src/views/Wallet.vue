@@ -65,28 +65,32 @@
                 <div class="exchange operation__container">
                     <div class="operation__label">Обменять валюту</div>
                     <div class="give">
-                        <div>Отдаёте</div>
-                        <select v-model="valuteToGive">
-                            <option
-                                v-for="w of Object.keys(wallet)"
-                                :key="w"
-                            >{{w}}</option>
-                        </select>
-                        <input class="valute-input"
-                            v-model.number="amountToGive"
-                        >
-                    </div>
-
-                    <div class="receive">
-                        <div>Получаете</div>
-                        <select v-model="valuteToReceive">
-                            <option
-                                v-for="w of Object.keys(wallet)"
-                                :key="w"
-                            >{{w}}</option>
-                        </select>
+                        <div>Отдаёте
+                            <select v-model="valuteToGive">
+                                <option
+                                    v-for="w of Object.keys(wallet)"
+                                    :key="w"
+                                >{{w}}</option>
+                            </select>
+                        </div>
                         <div>
-                            {{amountToReceive}}
+                            Сумма:
+                            <input class="valute-input"
+                                v-model.number="amountToGive">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="receive">
+                        <div>Получаете
+                            <select v-model="valuteToReceive">
+                            <option
+                                v-for="w of Object.keys(wallet)"
+                                :key="w"
+                            >{{w}}</option>
+                            </select>
+                        </div>
+                        <div>
+                            Сумма: {{amountToReceive}}
                         </div>
                         
 
@@ -230,6 +234,7 @@ export default {
             return coins.sort((a,b)=>a.length - b.length).slice(0,5)
         },
         amountToReceive(){
+            if (typeof this.amountToGive != 'number') return 0
             let result = this.amountToGive * this.rate
             return result.toFixedNumber(10)
         }
@@ -255,6 +260,7 @@ export default {
     min-width:600px;
     margin: 15px auto;
     display: flex;
+    justify-content: center;
   }
   .autocomplette-button{
     margin: 2px;
